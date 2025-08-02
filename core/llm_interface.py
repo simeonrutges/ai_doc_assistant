@@ -1,7 +1,7 @@
 import requests
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "llama3:instruct"
+MODEL = "mistral:instruct"
 
 def ask_llm(question: str, context: str) -> str:
     prompt = f"""Beantwoord de volgende vraag zo duidelijk mogelijk op basis van de context hieronder.
