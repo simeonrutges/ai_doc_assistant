@@ -56,7 +56,7 @@ def upload_document(file):
     return f"✅ Bestand '{filename}' opgeslagen."
 
 def start_gradio():
-    with gr.Blocks() as demo:
+    with gr.Blocks(theme=gr.themes.Default) as demo:
         gr.Markdown("# 📄 AI Documentassistent")
 
         with gr.Row():
