@@ -16,5 +16,11 @@ __pycache__/
 
 # Door AI gegenereerde bestanden
 vectorstore/
+!vectorstore/.gitkeep
 summaries/
+!summaries/.gitkeep
 
+
+# FAISS en pickle bestanden expliciet uitsluiten
+*.faiss
+*.pkl
