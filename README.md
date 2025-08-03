@@ -34,3 +34,36 @@ Het project draait volledig lokaal waarbij rekening is gehouden met privacy, mod
 - Contextuele of hoofdstukgerichte samenvattingen  
 - Feedback-logging en evaluatie van gegenereerde antwoorden
 
+## Hoe gebruik je de documentassistent
+
+### 1. Start de interface
+
+Zorg dat je in de virtuele omgeving zit en voer het volgende script uit:
+
+```bash
+PYTHONPATH=. python scripts/gradio_app.py
+
+## Functionaliteiten van de Gradio-interface
+
+De interface biedt volledige functionaliteit voor lokale documentanalyse:
+
+### Upload nieuw document
+- Upload een PDF, DOCX, TXT, CSV of Markdown-bestand.
+- Bestanden worden automatisch opgeslagen in de `documents/`-map.
+
+### Herbouw alle indices
+- Splitst documenten in tekstchunks.
+- Genereert embeddings en slaat deze op in `vectorstore/`.
+- Noodzakelijke stap voordat vragen of samenvattingen kunnen worden gegenereerd.
+
+### Stel een vraag
+- Kies een document in de dropdown.
+- Typ een vraag in natuurlijke taal.
+- Ontvang een antwoord gegenereerd door het lokale LLM.
+- Bekijk ook de bijbehorende bronfragmenten uit het document.
+
+### Genereer samenvatting
+- Vat het geselecteerde document samen in één beknopte alinea.
+- Samenvatting wordt ook opgeslagen in de map `summaries/`.
+
+---
