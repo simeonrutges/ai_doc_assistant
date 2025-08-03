@@ -2,24 +2,39 @@ import os
 from core.document_loader import load_text_from_file
 from core.embedding_store import EmbeddingStore
 
-DOCUMENT_PATH = "documents/sample.pdf"         # Of verander dit naar een ander bestand
+DOCUMENTS_DIR = "documents"
 VECTORSTORE_DIR = "vectorstore"
+TOP_K = 3  # eventueel gebruikt in query/debug
 
 def main():
-    print(f"📄 Laden van document: {DOCUMENT_PATH}")
-    text = load_text_from_file(DOCUMENT_PATH)
+    os.makedirs(VECTORSTORE_DIR, exist_ok=True)
 
-    print("🔪 Tekst opdelen in chunks...")
-    store = EmbeddingStore()
-    chunks = store.chunk_text(text)
+    files = [
+        f for f in os.listdir(DOCUMENTS_DIR)
+        if f.lower().endswith(('.pdf', '.txt', '.docx'))
+    ]
 
-    print(f"🧠 Embeddings genereren voor {len(chunks)} chunks...")
-    store.build_index(chunks)
+    if not files:
+        print("⚠️ Geen documenten gevonden in de 'documents/' map.")
+        return
 
-    print(f"💾 Opslaan in vectorstore map: {VECTORSTORE_DIR}")
-    store.save(VECTORSTORE_DIR)
+    for filename in files:
+        path = os.path.join(DOCUMENTS_DIR, filename)
+        name = os.path.splitext(filename)[0]
+        print(f"\n📄 Verwerken: {filename}")
 
-    print("✅ Index succesvol opgebouwd en opgeslagen.")
+        text = load_text_from_file(path)
+        print("🔪 Opdelen in chunks...")
+
+        store = EmbeddingStore()
+        store.add_text(text)
+
+        output_path = os.path.join(VECTORSTORE_DIR, f"{name}.faiss")
+        print(f"💾 Opslaan van index in: {output_path}")
+        store.save(output_path)
+
+    print("\n✅ Alle documenten zijn geïndexeerd.")
 
 if __name__ == "__main__":
     main()
+
