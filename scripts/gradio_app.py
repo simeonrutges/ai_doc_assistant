@@ -1,50 +1,59 @@
 import os
-import shutil
 import gradio as gr
+from core.document_loader import load_text_from_file
 from core.embedding_store import EmbeddingStore
 from core.llm_interface import ask_llm
-from core.document_loader import load_text_from_file
+from scripts.ask_docs import stel_vraag_aan_document
 
 DOCUMENTS_DIR = "documents"
 VECTORSTORE_DIR = "vectorstore"
-TOP_K = 3
+SUMMARIES_DIR = "summaries"
 
 def beschikbare_documenten():
     return [
-        os.path.splitext(f)[0]
-        for f in os.listdir(DOCUMENTS_DIR)
-        if f.lower().endswith(('.pdf', '.txt', '.docx', '.csv', '.md'))
+        f for f in os.listdir(DOCUMENTS_DIR)
+        if f.lower().endswith((".pdf", ".txt", ".docx", ".md", ".csv"))
     ]
 
-def beantwoord_vraag(vraag: str, document_naam: str) -> str:
-    vectorstore_path = f"{VECTORSTORE_DIR}/{document_naam}.faiss"
+def herindexeer_documenten():
+    os.makedirs(VECTORSTORE_DIR, exist_ok=True)
+    for filename in beschikbare_documenten():
+        path = os.path.join(DOCUMENTS_DIR, filename)
+        name = os.path.splitext(filename)[0]
+        text = load_text_from_file(path)
+        store = EmbeddingStore()
+        store.add_text(text)
+        store.save(os.path.join(VECTORSTORE_DIR, f"{name}.faiss"))
+    return "✅ Index opnieuw opgebouwd."
 
-    try:
-        store = EmbeddingStore.load(vectorstore_path)
-    except FileNotFoundError:
-        return f"❌ Bestand niet gevonden: {vectorstore_path}"
-
-    context = store.query(vraag, top_k=TOP_K)
-    if not context:
-        return "⚠️ Geen relevante context gevonden."
+def beantwoord_vraag(vraag, document):
+    name = os.path.splitext(document)[0]
+    vectorstore_path = os.path.join(VECTORSTORE_DIR, f"{name}.faiss")
+    store = EmbeddingStore.load(vectorstore_path)
+    context = store.query(vraag)
     return ask_llm(vraag, context)
 
-def verwerk_upload(file) -> str:
+def genereer_samenvatting(document):
+    name = os.path.splitext(document)[0]
+    vectorstore_path = os.path.join(VECTORSTORE_DIR, f"{name}.faiss")
+    store = EmbeddingStore.load(vectorstore_path)
+    context = store.query("Geef een samenvatting van het document.")
+    prompt = "Vat het document samen in één alinea:\n\n" + "\n\n".join(context)
+    summary = ask_llm(prompt, context)
+    os.makedirs(SUMMARIES_DIR, exist_ok=True)
+    output_path = os.path.join(SUMMARIES_DIR, f"{name}.summary.txt")
+    with open(output_path, "w") as f:
+        f.write(summary)
+    return summary
+
+def upload_document(file):
     if file is None:
         return "⚠️ Geen bestand geüpload."
-
-    bestandsnaam = os.path.basename(file.name)
-    doelpad = os.path.join(DOCUMENTS_DIR, bestandsnaam)
-    shutil.copy(file.name, doelpad)
-
-    tekst = load_text_from_file(doelpad)
-    store = EmbeddingStore()
-    store.add_text(tekst)
-
-    indexpad = os.path.join(VECTORSTORE_DIR, f"{os.path.splitext(bestandsnaam)[0]}.faiss")
-    store.save(indexpad)
-
-    return f"✅ Bestand '{bestandsnaam}' verwerkt en geïndexeerd."
+    filename = os.path.basename(file.name)
+    dest_path = os.path.join(DOCUMENTS_DIR, filename)
+    with open(dest_path, "wb") as f:
+        f.write(file.read())
+    return f"✅ Bestand '{filename}' opgeslagen."
 
 def start_gradio():
     with gr.Blocks() as demo:
@@ -54,16 +63,40 @@ def start_gradio():
             vraag = gr.Textbox(label="Stel je vraag")
             document = gr.Dropdown(choices=beschikbare_documenten(), label="Kies een document")
 
+        antwoord = gr.Textbox(label="Antwoord", lines=5)
+        context_output = gr.Textbox(label="Bronfragmenten", lines=10, interactive=False)
 
-        antwoord = gr.Textbox(label="Antwoord")
+        def beantwoord_met_context(vraag, document):
+            antwoord, contextfragmenten = stel_vraag_aan_document(vraag, os.path.splitext(document)[0])
+            context_tekst = "\n\n".join(
+                [f"📚 Fragment {i+1}:\n{fragment}" for i, fragment in enumerate(contextfragmenten)]
+            )
+            return antwoord, context_tekst
 
-        knop = gr.Button("Beantwoord vraag")
-        knop.click(beantwoord_vraag, inputs=[vraag, document], outputs=antwoord)
+        gr.Button("Beantwoord vraag").click(
+            beantwoord_met_context, inputs=[vraag, document], outputs=[antwoord, context_output]
+        )
 
-        gr.Markdown("## 📤 Upload een nieuw document")
-        uploader = gr.File(label="Upload een tekstbestand")
-        upload_uitvoer = gr.Textbox(label="Status upload")
-        uploader.upload(verwerk_upload, inputs=uploader, outputs=upload_uitvoer)
+        gr.Markdown("---")
+
+        gr.Markdown("## 📄 Samenvatting")
+        samenvatting_output = gr.Textbox(label="Samenvatting")
+        gr.Button("Genereer samenvatting").click(
+            genereer_samenvatting, inputs=document, outputs=samenvatting_output
+        )
+
+        gr.Markdown("---")
+
+        gr.Markdown("## 📁 Upload nieuw document")
+        upload = gr.File(label="Upload hier een bestand")
+        upload_output = gr.Textbox(label="Upload status")
+        gr.Button("Upload").click(upload_document, inputs=upload, outputs=upload_output)
+
+        gr.Markdown("---")
+
+        gr.Button("🔄 Herbouw alle indices").click(
+            herindexeer_documenten, outputs=gr.Textbox(label="Index status")
+        )
 
     demo.launch()
 
