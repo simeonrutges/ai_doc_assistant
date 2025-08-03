@@ -3,43 +3,40 @@ from core.document_loader import load_text_from_file
 from core.llm_interface import ask_llm
 
 DOCUMENTS_DIR = "documents"
-SUMMARY_DIR = "summaries"
+SUMMARIES_DIR = "summaries"
 
 def main():
-    os.makedirs(SUMMARY_DIR, exist_ok=True)
+    os.makedirs(SUMMARIES_DIR, exist_ok=True)
 
     files = [
         f for f in os.listdir(DOCUMENTS_DIR)
-        if f.lower().endswith(('.pdf', '.txt', '.docx'))
+        if f.lower().endswith(('.pdf', '.txt', '.docx', '.csv', '.md'))
     ]
 
     if not files:
-        print("⚠️ Geen documenten gevonden in de 'documents/' map.")
+        print("⚠️ Geen documenten gevonden in 'documents/'")
         return
 
     for filename in files:
-        path = os.path.join(DOCUMENTS_DIR, filename)
         name = os.path.splitext(filename)[0]
-        output_path = os.path.join(SUMMARY_DIR, f"{name}.summary.txt")
+        input_path = os.path.join(DOCUMENTS_DIR, filename)
+        output_path = os.path.join(SUMMARIES_DIR, f"{name}.summary.txt")
 
-        print(f"\n📄 Samenvatten: {filename}")
-        text = load_text_from_file(path)
+        print(f"\n📝 Samenvatten: {filename}")
+        text = load_text_from_file(input_path)
 
-        prompt = f"""Vat het volgende document samen in duidelijke bullet points. Benoem hoofdlijnen, intentie en eventuele conclusies:
+        prompt = (
+            "Vat onderstaande tekst samen in maximaal 10 zinnen.\n\n"
+            f"{text}"
+        )
+        summary = ask_llm(prompt, "")
 
-{text}
-
-Samenvatting:"""
-
-        summary = ask_llm("Vat samen:", text)
-
-        with open(output_path, "w", encoding="utf-8") as f:
+        with open(output_path, "w") as f:
             f.write(summary.strip())
 
-        print(f"✅ Opgeslagen in: {output_path}")
-
-    print("\n📚 Alle documenten zijn samengevat.")
+        print(f"✅ Samenvatting opgeslagen in: {output_path}")
 
 if __name__ == "__main__":
     main()
+
 
