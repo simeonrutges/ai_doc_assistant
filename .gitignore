@@ -24,3 +24,7 @@ summaries/
 # FAISS en pickle bestanden expliciet uitsluiten
 *.faiss
 *.pkl
+
+# Documenten (worden lokaal gehouden, niet in Git)
+documents/
+!documents/.gitkeep
