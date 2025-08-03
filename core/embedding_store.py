@@ -14,6 +14,10 @@ class EmbeddingStore:
         self.index = None
         self.text_chunks = []
 
+    def add_text(self, text: str):
+        chunks = self.chunk_text(text)
+        self.build_index(chunks)
+
     def chunk_text(self, text: str, chunk_size: int = CHUNK_SIZE) -> List[str]:
         return [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
 
@@ -30,10 +34,17 @@ class EmbeddingStore:
         with open(os.path.join(path, "chunks.pkl"), "wb") as f:
             pickle.dump(self.text_chunks, f)
 
-    def load(self, path: str):
-        self.index = faiss.read_index(os.path.join(path, "index.faiss"))
-        with open(os.path.join(path, "chunks.pkl"), "rb") as f:
-            self.text_chunks = pickle.load(f)
+    @classmethod
+    def load(cls, path: str):
+        instance = cls()
+        index_path = os.path.join(path, "index.faiss")
+        chunks_path = os.path.join(path, "chunks.pkl")
+
+        instance.index = faiss.read_index(index_path)
+        with open(chunks_path, "rb") as f:
+            instance.text_chunks = pickle.load(f)
+
+        return instance
 
     def query(self, query_text: str, top_k: int = 3) -> List[str]:
         query_embedding = self.model.encode([query_text])
