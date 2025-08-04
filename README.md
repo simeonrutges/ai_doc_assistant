@@ -1,9 +1,9 @@
 # AI Document Assistant
 
 **AI Document Assistant** is een lokaal Python-project waarin ik werk aan een lokale AI-documentassistent.  
-Het is opgezet als persoonlijk oefenproject om ervaring op te doen met AI-technieken zoals document parsing, chunking, embeddings en Retrieval-Augmented Generation (RAG) met lokaal draaiende Large Language Models via [Ollama](https://ollama.com).
+Het is opgezet als persoonlijk oefenproject om ervaring op te doen met document parsing, chunking, embeddings en Retrieval-Augmented Generation (RAG) met lokaal draaiende Large Language Models via [Ollama](https://ollama.com). In plaats van het gebruiken van frameworks zoals LangChain is bewust gekozen om de kernfunctionaliteit (zoals chunking, opslag en retrieval) zelf te bouwen.
 
-Het project draait volledig lokaal waarbij rekening is gehouden met privacy, modulariteit en uitbreidbaarheid. De huidige versie werkt via de command line, maar is voorbereid op uitbreiding met een API of webinterface.
+Het project draait volledig lokaal waarbij rekening is gehouden met privacy, modulariteit en uitbreidbaarheid. De huidige versie is te starten via de command line, maar is verder te bedienen via een simpele webinterface (Gradio).
 
 ---
 
@@ -28,20 +28,42 @@ Het project draait volledig lokaal waarbij rekening is gehouden met privacy, mod
 
 ## Mogelijke vervolgstappen
 
-- REST API bouwen met FastAPI  
-- Webinterface via Gradio of Streamlit  
+- REST API bouwen met FastAPI   
 - Vragen stellen over meerdere documenten tegelijk  
 - Contextuele of hoofdstukgerichte samenvattingen  
 - Feedback-logging en evaluatie van gegenereerde antwoorden
 
+---
+
+## Installatie en starten
+
+Zorg dat je Python 3.10 of hoger en [Poetry](https://python-poetry.org/docs/#installation) hebt geïnstalleerd.
+
+Kloon de repository en installeer de afhankelijkheden:
+
+```bash
+git clone https://github.com/simeonrutges/ai_doc_assistant
+cd ai_doc_assistant
+poetry install
+poetry shell
+```
+Installeer en start een lokaal taalmodel via Ollama:
+
+```bash
+ollama run llama3
+```
+
+
+
 ## Hoe gebruik je de documentassistent
 
-### 1. Start de interface
+### Start de interface
 
 Zorg dat je in de virtuele omgeving zit en voer het volgende script uit:
 
 ```bash
-PYTHONPATH=. python scripts/gradio_app.py
+PYTHONPATH=. python scripts/gradio_app.py   
+```
 
 ## Functionaliteiten van de Gradio-interface
 
@@ -50,6 +72,8 @@ De interface biedt volledige functionaliteit voor lokale documentanalyse:
 ### Upload nieuw document
 - Upload een PDF, DOCX, TXT, CSV of Markdown-bestand.
 - Bestanden worden automatisch opgeslagen in de `documents/`-map.
+- druk op de knop **Herbouw alle indices** 
+
 
 ### Herbouw alle indices
 - Splitst documenten in tekstchunks.
