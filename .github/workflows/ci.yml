@@ -9,7 +9,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -21,9 +21,6 @@ jobs:
       - name: Configure Poetry
         run: |
           poetry config virtualenvs.create false
-        
-      - name: Use Python 3.11 in Poetry
-        run: poetry env use python3.11
 
       - name: Install dependencies
         run: poetry install
