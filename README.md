@@ -37,15 +37,14 @@ Het project draait volledig lokaal waarbij rekening is gehouden met privacy, mod
 
 ## Installatie en starten
 
-Zorg dat je Python 3.10 of hoger en [Poetry](https://python-poetry.org/docs/#installation) hebt geïnstalleerd.
+Zorg dat je Python 3.11 (niet hoger dan 3.12) en [Poetry](https://python-poetry.org/docs/#installation) hebt geïnstalleerd.
 
 Kloon de repository en installeer de afhankelijkheden:
 
 ```bash
 git clone https://github.com/simeonrutges/ai_doc_assistant
 cd ai_doc_assistant
-poetry install
-poetry shell
+poetry install --with dev
 ```
 Installeer en start een lokaal taalmodel via Ollama:
 
@@ -59,10 +58,12 @@ ollama run llama3
 
 ### Start de interface
 
-Zorg dat je in de virtuele omgeving zit en voer het volgende script uit:
+### Start de interface
+
+Zorg dat je in de virtuele omgeving zit of gebruik `poetry run` om het script uit te voeren:
 
 ```bash
-PYTHONPATH=. python scripts/gradio_app.py   
+poetry run PYTHONPATH=. python scripts/gradio_app.py 
 ```
 
 ## Functionaliteiten van de Gradio-interface
