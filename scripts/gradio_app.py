@@ -1,8 +1,8 @@
 import os
 import gradio as gr
-from core.document_loader import load_text_from_file
-from core.embedding_store import EmbeddingStore
-from core.llm_interface import ask_llm
+from ai_doc_assistant.document_loader import load_text_from_file
+from ai_doc_assistant.embedding_store import EmbeddingStore
+from ai_doc_assistant.llm_interface import ask_llm
 from scripts.ask_docs import stel_vraag_aan_document
 
 DOCUMENTS_DIR = "documents"

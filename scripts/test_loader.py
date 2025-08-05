@@ -1,4 +1,4 @@
-from core.document_loader import load_text_from_file
+from ai_doc_assistant.document_loader import load_text_from_file
 
 def main():
     filepath = "documents/sample.pdf"
