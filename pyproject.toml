@@ -6,7 +6,7 @@ authors = [
     {name = "simeonrutges",email = "s.rutges@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11,<3.13"
 dependencies = [
     "pymupdf (>=1.26.3,<2.0.0)",
     "python-docx (>=1.2.0,<2.0.0)",
