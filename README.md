@@ -58,8 +58,6 @@ ollama run llama3
 
 ### Start de interface
 
-### Start de interface
-
 Je kunt de Gradio-interface starten op twee manieren:
 
 #### Optie 1: via `poetry run` (aanbevolen)
