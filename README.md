@@ -1,5 +1,7 @@
 # AI Document Assistant
 
+![CI](https://github.com/simeonrutges/ai_doc_assistant/actions/workflows/ci.yml/badge.svg)
+
 **AI Document Assistant** is een lokaal Python-project waarin ik werk aan een lokale AI-documentassistent.  
 Het is opgezet als persoonlijk oefenproject om ervaring op te doen met document parsing, chunking, embeddings en Retrieval-Augmented Generation (RAG) met een lokaal draaiende Large Language Model via [Ollama](https://ollama.com). In plaats van het gebruiken van frameworks zoals LangChain is bewust gekozen om de kernfunctionaliteit (zoals chunking, opslag en retrieval) zelf te bouwen.
 
