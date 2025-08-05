@@ -60,12 +60,20 @@ ollama run llama3
 
 ### Start de interface
 
-Zorg dat je in de virtuele omgeving zit of gebruik `poetry run` om het script uit te voeren:
+Je kunt de Gradio-interface starten op twee manieren:
+
+#### Optie 1: via `poetry run` (aanbevolen)
+
+Als je nog **niet** in de virtuele omgeving zit:
 
 ```bash
-poetry run PYTHONPATH=. python scripts/gradio_app.py 
+poetry run env PYTHONPATH=. python scripts/gradio_app.py 
 ```
-
+### Optie 2: binnen een geactiveerde virtuele omgeving
+```bash
+export PYTHONPATH=.
+python scripts/gradio_app.py
+```
 ## Functionaliteiten van de Gradio-interface
 
 De interface biedt volledige functionaliteit voor lokale documentanalyse:
